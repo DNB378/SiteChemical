@@ -1,0 +1,616 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Жива таблиця хімічних елементів | Хімія 4.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --space-blue: #0a192f;
+            --neon-green: #64ffda;
+            --atomic-red: #ff2e63;
+            --particle-yellow: #f9d71c;
+            --gradient-1: linear-gradient(135deg, #0a192f 0%, #172a45 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--gradient-1);
+            color: white;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .hero::before {
+                content: '';
+                position: absolute;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(100,255,218,0.1) 0%, rgba(10,25,47,0) 70%);
+                animation: particle-flow 20s linear infinite;
+            }
+
+        @keyframes particle-flow {
+            0% {
+                transform: translate(-50%, -50%);
+            }
+
+            100% {
+                transform: translate(50%, 50%);
+            }
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 1;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            text-shadow: 0 0 15px var(--neon-green);
+            margin-bottom: 2rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .periodic-table {
+            display: grid;
+            grid-template-columns: repeat(18, 1fr);
+            gap: 3px;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+
+        .element {
+            position: relative;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border: 1px solid rgba(100,255,218,0.1);
+        }
+
+            .element:hover {
+                transform: scale(1.15);
+                z-index: 100;
+                background: linear-gradient(45deg, #64ffda22, #64ffda44);
+                box-shadow: 0 0 25px #64ffda33;
+            }
+
+        .atomic-number {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            font-size: 0.8em;
+            color: var(--neon-green);
+        }
+
+        .symbol {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .name {
+            font-size: 0.7em;
+            opacity: 0.8;
+            line-height: 1.2;
+        }
+
+        .element[data-radioactive="true"] {
+            animation: radioactive-glow 2s infinite alternate;
+        }
+
+        @keyframes radioactive-glow {
+            from {
+                box-shadow: 0 0 5px #ff2e63;
+            }
+
+            to {
+                box-shadow: 0 0 20px #ff2e63;
+            }
+        }
+
+        .atom-model {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            margin: 2rem auto;
+        }
+
+        .nucleus {
+            width: 30px;
+            height: 30px;
+            background: var(--atomic-red);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 30px var(--atomic-red);
+        }
+
+        .electron {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--particle-yellow);
+            border-radius: 50%;
+            animation: electron-orbit 5s linear infinite;
+        }
+
+        @keyframes electron-orbit {
+            from {
+                transform: rotate(0deg) translateX(100px) rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg) translateX(100px) rotate(-360deg);
+            }
+        }
+
+        .infographics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .info-card {
+            background: rgba(255,255,255,0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+
+            .info-card:hover {
+                transform: translateY(-10px);
+            }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .periodic-table {
+                grid-template-columns: repeat(9, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="hero">
+        <div class="hero-content">
+            <h1>🌌 Жива таблиця хімічних елементів ⚛️</h1>
+            <p class="tagline">Відкривай світ хімії через інтерактивні дослідження! 🔬✨</p>
+        </div>
+    </section>
+
+    <section class="container">
+        <h2>📊 Інтерактивна періодична таблиця</h2>
+        <div class="periodic-table" id="periodicTable">
+        </div>
+    </section>
+
+    <section class="container">
+        <h2>⚛️ 3D Модель атома</h2>
+        <div class="atom-model">
+            <div class="nucleus"></div>
+            <div class="electron"></div>
+            <div class="electron" style="animation-delay: -2.5s"></div>
+        </div>
+    </section>
+
+    <section class="container">
+        <h2>📈 Наукова інфографіка</h2>
+        <div class="infographics">
+            <div class="info-card">
+                <h3>📚 Історія відкриттів</h3>
+                <img src="assets/timeline.svg" alt="Історична хронологія" class="info-img">
+            </div>
+
+            <div class="info-card">
+                <h3>⚡ Електронна конфігурація</h3>
+                <div class="electron-config" id="electronConfig"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container">
+        <h2>🧪 Інтерактивний тест</h2>
+        <div class="quiz-container" id="quiz"></div>
+    </section>
+
+    <script>
+        const elements = [
+            { symbol: 'H', name: 'Водень', atomicNumber: 1 },
+            { symbol: 'He', name: 'Гелій', atomicNumber: 2 },
+            { symbol: 'Li', name: 'Літій', atomicNumber: 3 },
+            { symbol: 'Be', name: 'Берилій', atomicNumber: 4 },
+            { symbol: 'B', name: 'Бор', atomicNumber: 5 },
+            { symbol: 'C', name: 'Вуглець', atomicNumber: 6 },
+            { symbol: 'N', name: 'Азот', atomicNumber: 7 },
+            { symbol: 'O', name: 'Кисень', atomicNumber: 8 },
+            { symbol: 'F', name: 'Фтор', atomicNumber: 9 },
+            { symbol: 'Ne', name: 'Неон', atomicNumber: 10 },
+            { symbol: 'Na', name: 'Натрій', atomicNumber: 11 },
+            { symbol: 'Mg', name: 'Магній', atomicNumber: 12 },
+            { symbol: 'Al', name: 'Алюміній', atomicNumber: 13 },
+            { symbol: 'Si', name: 'Кремній', atomicNumber: 14 },
+            { symbol: 'P', name: 'Фосфор', atomicNumber: 15 },
+            { symbol: 'S', name: 'Сірка', atomicNumber: 16 },
+            { symbol: 'Cl', name: 'Хлор', atomicNumber: 17 },
+            { symbol: 'Ar', name: 'Аргон', atomicNumber: 18 },
+            { symbol: 'K', name: 'Калій', atomicNumber: 19 },
+            { symbol: 'Ca', name: 'Кальцій', atomicNumber: 20 },
+            { symbol: 'Sc', name: 'Скандій', atomicNumber: 21 },
+            { symbol: 'Ti', name: 'Титан', atomicNumber: 22 },
+            { symbol: 'V', name: 'Ванадій', atomicNumber: 23 },
+            { symbol: 'Cr', name: 'Хром', atomicNumber: 24 },
+            { symbol: 'Mn', name: 'Марганець', atomicNumber: 25 },
+            { symbol: 'Fe', name: 'Залізо', atomicNumber: 26 },
+            { symbol: 'Co', name: 'Кобальт', atomicNumber: 27 },
+            { symbol: 'Ni', name: 'Нікель', atomicNumber: 28 },
+            { symbol: 'Cu', name: 'Мідь', atomicNumber: 29 },
+            { symbol: 'Zn', name: 'Цинк', atomicNumber: 30 },
+            { symbol: 'Ga', name: 'Галій', atomicNumber: 31 },
+            { symbol: 'Ge', name: 'Германій', atomicNumber: 32 },
+            { symbol: 'As', name: 'Мыш\'як', atomicNumber: 33 },
+            { symbol: 'Se', name: 'Селен', atomicNumber: 34 },
+            { symbol: 'Br', name: 'Бром', atomicNumber: 35 },
+            { symbol: 'Kr', name: 'Криптон', atomicNumber: 36 },
+            { symbol: 'Rb', name: 'Рубідій', atomicNumber: 37 },
+            { symbol: 'Sr', name: 'Стронцій', atomicNumber: 38 },
+            { symbol: 'Y', name: 'Ітрій', atomicNumber: 39 },
+            { symbol: 'Zr', name: 'Цирконій', atomicNumber: 40 },
+            { symbol: 'Nb', name: 'Ніобій', atomicNumber: 41 },
+            { symbol: 'Mo', name: 'Молібден', atomicNumber: 42 },
+            { symbol: 'Tc', name: 'Технецій', atomicNumber: 43 },
+            { symbol: 'Ru', name: 'Рутеній', atomicNumber: 44 },
+            { symbol: 'Rh', name: 'Родій', atomicNumber: 45 },
+            { symbol: 'Pd', name: 'Паладій', atomicNumber: 46 },
+            { symbol: 'Ag', name: 'Срібло', atomicNumber: 47 },
+            { symbol: 'Cd', name: 'Кадмій', atomicNumber: 48 },
+            { symbol: 'In', name: 'Індій', atomicNumber: 49 },
+            { symbol: 'Sn', name: 'Олово', atomicNumber: 50 },
+            { symbol: 'Sb', name: 'Стибій', atomicNumber: 51 },
+            { symbol: 'Te', name: 'Телур', atomicNumber: 52 },
+            { symbol: 'I', name: 'Йод', atomicNumber: 53 },
+            { symbol: 'Xe', name: 'Ксенон', atomicNumber: 54 },
+            { symbol: 'Cs', name: 'Цезій', atomicNumber: 55 },
+            { symbol: 'Ba', name: 'Барій', atomicNumber: 56 },
+            { symbol: 'La', name: 'Лантан', atomicNumber: 57 },
+            { symbol: 'Ce', name: 'Церій', atomicNumber: 58 },
+            { symbol: 'Pr', name: 'Празеодим', atomicNumber: 59 },
+            { symbol: 'Nd', name: 'Неодим', atomicNumber: 60 },
+            { symbol: 'Pm', name: 'Прометій', atomicNumber: 61 },
+            { symbol: 'Sm', name: 'Самарій', atomicNumber: 62 },
+            { symbol: 'Eu', name: 'Європій', atomicNumber: 63 },
+            { symbol: 'Gd', name: 'Гадоліній', atomicNumber: 64 },
+            { symbol: 'Tb', name: 'Тербій', atomicNumber: 65 },
+            { symbol: 'Dy', name: 'Диспрозій', atomicNumber: 66 },
+            { symbol: 'Ho', name: 'Гольмій', atomicNumber: 67 },
+            { symbol: 'Er', name: 'Ербій', atomicNumber: 68 },
+            { symbol: 'Tm', name: 'Тулій', atomicNumber: 69 },
+            { symbol: 'Yb', name: 'Ітербій', atomicNumber: 70 },
+            { symbol: 'Lu', name: 'Лютецій', atomicNumber: 71 },
+            { symbol: 'Hf', name: 'Гафній', atomicNumber: 72 },
+            { symbol: 'Ta', name: 'Тантал', atomicNumber: 73 },
+            { symbol: 'W', name: 'Вольфрам', atomicNumber: 74 },
+            { symbol: 'Re', name: 'Реній', atomicNumber: 75 },
+            { symbol: 'Os', name: 'Осмій', atomicNumber: 76 },
+            { symbol: 'Ir', name: 'Іридій', atomicNumber: 77 },
+            { symbol: 'Pt', name: 'Платина', atomicNumber: 78 },
+            { symbol: 'Au', name: 'Золото', atomicNumber: 79 },
+            { symbol: 'Hg', name: 'Ртуть', atomicNumber: 80 },
+            { symbol: 'Tl', name: 'Талій', atomicNumber: 81 },
+            { symbol: 'Pb', name: 'Свинець', atomicNumber: 82 },
+            { symbol: 'Bi', name: 'Вісмут', atomicNumber: 83 },
+            { symbol: 'Po', name: 'Полоній', atomicNumber: 84 },
+            { symbol: 'At', name: 'Астат', atomicNumber: 85 },
+            { symbol: 'Rn', name: 'Радон', atomicNumber: 86 },
+            { symbol: 'Fr', name: 'Францій', atomicNumber: 87 },
+            { symbol: 'Ra', name: 'Радій', atomicNumber: 88 },
+            { symbol: 'Ac', name: 'Актиній', atomicNumber: 89 },
+            { symbol: 'Th', name: 'Торій', atomicNumber: 90 },
+            { symbol: 'Pa', name: 'Протактиній', atomicNumber: 91 },
+            { symbol: 'U', name: 'Уран', atomicNumber: 92 },
+            { symbol: 'Np', name: 'Нептуній', atomicNumber: 93 },
+            { symbol: 'Pu', name: 'Плутоній', atomicNumber: 94 },
+            { symbol: 'Am', name: 'Америцій', atomicNumber: 95 },
+            { symbol: 'Cm', name: 'Кюрій', atomicNumber: 96 },
+            { symbol: 'Bk', name: 'Берклій', atomicNumber: 97 },
+            { symbol: 'Cf', name: 'Каліфорній', atomicNumber: 98 },
+            { symbol: 'Es', name: 'Ейнштейній', atomicNumber: 99 },
+            { symbol: 'Fm', name: 'Фермій', atomicNumber: 100 },
+            { symbol: 'Md', name: 'Менделевій', atomicNumber: 101 },
+            { symbol: 'No', name: 'Нобелій', atomicNumber: 102 },
+            { symbol: 'Lr', name: 'Лоуренсій', atomicNumber: 103 },
+            { symbol: 'Rf', name: 'Резерфордій', atomicNumber: 104 },
+            { symbol: 'Db', name: 'Дубній', atomicNumber: 105 },
+            { symbol: 'Sg', name: 'Сіборгій', atomicNumber: 106 },
+            { symbol: 'Bh', name: 'Борій', atomicNumber: 107 },
+            { symbol: 'Hs', name: 'Гасій', atomicNumber: 108 },
+            { symbol: 'Mt', name: 'Мейтнерій', atomicNumber: 109 },
+            { symbol: 'Ds', name: 'Дармштадтій', atomicNumber: 110 },
+            { symbol: 'Rg', name: 'Рентгеній', atomicNumber: 111 },
+            { symbol: 'Cn', name: 'Коперницій', atomicNumber: 112 },
+            { symbol: 'Nh', name: 'Ніхоній', atomicNumber: 113 },
+            { symbol: 'Fl', name: 'Флеровій', atomicNumber: 114 },
+            { symbol: 'Mc', name: 'Московій', atomicNumber: 115 },
+            { symbol: 'Lv', name: 'Ліверморій', atomicNumber: 116 },
+            { symbol: 'Ts', name: 'Теннесин', atomicNumber: 117 },
+            { symbol: 'Og', name: 'Оганесон', atomicNumber: 118 }
+        ];
+
+        const periodicTable = document.getElementById('periodicTable');
+        elements.forEach(element => {
+            const el = document.createElement('div');
+            el.className = 'element';
+            el.innerHTML = `
+                            <div class="atomic-number">${element.atomicNumber}</div>
+                            <div class="symbol">${element.symbol}</div>
+                            <div class="name">${element.name}</div>
+                        `;
+            periodicTable.appendChild(el);
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('show');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.info-card, .atom-model').forEach((el) => {
+            observer.observe(el);
+        });
+
+        const quizData = [
+            {
+                question: "Який елемент має символ 'Au'?",
+                options: ["Золото", "Срібло", "Аргон"],
+                correct: 0,
+                fact: "Золото - один з найменш хімічно активних металів!"
+            },
+            {
+                question: "Який елемент найлегший у періодичній таблиці?",
+                options: ["Гелій", "Водень", "Літій"],
+                correct: 1,
+                fact: "Водень складає ~75% маси Всесвіту!"
+            },
+            {
+                question: "Який метал рідкісний при кімнатній температурі?",
+                options: ["Залізо", "Ртуть", "Алюміній"],
+                correct: 1,
+                fact: "Ртуть - єдиний метал, рідкий за кімнатної температури"
+            },
+            {
+                question: "Який елемент головний у складі алмазу?",
+                options: ["Кисень", "Вуглець", "Кремній"],
+                correct: 1,
+                fact: "Алмаз - алотропна форма вуглецю"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        const quizContainer = document.getElementById('quiz');
+        const scoreDisplay = document.createElement('div');
+        scoreDisplay.className = 'score-display';
+
+        function initializeQuiz() {
+            quizContainer.innerHTML = '';
+            quizContainer.appendChild(scoreDisplay);
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = quizData[currentQuestion];
+            const questionEl = document.createElement('div');
+            questionEl.className = `question ${currentQuestion === 0 ? 'active' : ''}`;
+            questionEl.innerHTML = `
+                    <h3>${currentQuestion + 1}. ${q.question}</h3>
+                    <div class="options-container">
+                        ${q.options.map((opt, i) => `
+                            <button class="quiz-option"
+                                    onclick="checkAnswer(${currentQuestion}, ${i})"
+                                    data-correct="${i === q.correct}">
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div class="quiz-fact">${q.fact}</div>
+                `;
+            quizContainer.appendChild(questionEl);
+            updateScore();
+        }
+
+        function checkAnswer(questionIndex, selectedIndex) {
+            const options = document.querySelectorAll('.quiz-option');
+            const correctIndex = quizData[questionIndex].correct;
+            let isCorrect = selectedIndex === correctIndex;
+
+            options.forEach((option, index) => {
+                option.disabled = true;
+                if (index === correctIndex) {
+                    option.classList.add('correct');
+                }
+                if (index === selectedIndex && !isCorrect) {
+                    option.classList.add('incorrect');
+                }
+            });
+
+            if (isCorrect) {
+                score += 25;
+                showConfetti();
+            }
+
+            updateScore();
+
+            setTimeout(() => {
+                currentQuestion++;
+                if (currentQuestion < quizData.length) {
+                    showQuestion();
+                } else {
+                    showFinalResults();
+                }
+            }, 2000);
+        }
+
+        function updateScore() {
+            scoreDisplay.innerHTML = `🏆 Поточний рахунок: ${score} балів`;
+        }
+
+        function showFinalResults() {
+            quizContainer.innerHTML = `
+                    <div class="final-results">
+                        <h2>🎉 Тест завершено!</h2>
+                        <div class="final-score">Ваш результат: ${score}/100</div>
+                        <div class="performance-message">
+                            ${score === 100 ? 'Ідеально! Ви справжній хімік! 🔬' :
+                    score >= 75 ? 'Чудовий результат! Практикуйтесь ще! ⚗️' :
+                        'Непогано, але можна краще! Повторіть матеріал! 📚'}
+                        </div>
+                        <button onclick="restartQuiz()" class="restart-btn">Спробувати ще раз 🔁</button>
+                    </div>
+                `;
+        }
+
+        function showConfetti() {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.innerHTML = '🎊';
+            document.body.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 1000);
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            initializeQuiz();
+        }
+
+        initializeQuiz();
+    </script>
+    <style>
+        .quiz-container {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+        }
+
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: rgba(100,255,218,0.1);
+            border: 2px solid #64ffda;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .quiz-option:hover:not([disabled]) {
+                background: #64ffda33;
+                transform: translateX(10px);
+            }
+
+        .correct {
+            background: #2ecc71 !important;
+            border-color: #27ae60 !important;
+        }
+
+        .incorrect {
+            background: #e74c3c !important;
+            border-color: #c0392b !important;
+        }
+
+        .score-display {
+            font-size: 1.2em;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: #64ffda22;
+            border-radius: 8px;
+        }
+
+        .final-results {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .final-score {
+            font-size: 2em;
+            margin: 1rem 0;
+            color: #64ffda;
+        }
+
+        .restart-btn {
+            background: #64ffda;
+            color: #0a192f;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            margin-top: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .confetti {
+            position: fixed;
+            animation: confetti-fall 1s linear;
+            font-size: 1.5rem;
+            z-index: 1000;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        .quiz-fact {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #ffffff11;
+            border-radius: 8px;
+            font-style: italic;
+        }
+    </style>
+</body>
+</html>
