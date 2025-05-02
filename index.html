@@ -209,63 +209,53 @@
 
   <style>
         /* Додаємо нові стилі для тултипу та атома */
-        .element-tooltip {
-            position: fixed;
-            background: var(--space-blue);
-            border: 2px solid var(--neon-green);
-            padding: 1rem;
-            border-radius: 10px;
-            max-width: 300px;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 1000;
-            box-shadow: 0 0 20px rgba(100,255,218,0.3);
-        }
+      .element-tooltip {
+    position: fixed;
+    background: var(--space-blue);
+    border: 2px solid var(--neon-green);
+    padding: 1rem;
+    border-radius: 10px;
+    max-width: 300px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1000;
+    box-shadow: 0 0 20px rgba(100,255,218,0.3);
+}
 
-        .live-atom {
-            position: relative;
-            width: 120px;
-            height: 120px;
-            margin: 1rem auto;
-        }
+.live-atom {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 1rem auto;
+}
 
-        .live-nucleus {
-            width: 20px;
-            height: 20px;
-            background: var(--atomic-red);
-            border-radius: 50%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 15px var(--atomic-red);
-        }
+.live-nucleus {
+    width: 20px;
+    height: 20px;
+    background: var(--atomic-red);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 15px var(--atomic-red);
+}
 
-        .live-electron {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background: var(--particle-yellow);
-            border-radius: 50%;
-            transform-origin: 50% 50%;
-        }
+.live-electron {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--particle-yellow);
+    border-radius: 50%;
+    transform-origin: 50% 50%;
+}
 
-        /* Виправлення анімації електронів */
-        @keyframes electron-orbit {
-            0% { transform: rotate(0deg) translateX(50px) rotate(0deg); }
-            100% { transform: rotate(360deg) translateX(50px) rotate(-360deg); }
-        }
-
-        /* Вирівнювання ядра */
-        .nucleus {
-            animation: nucleus-float 4s ease-in-out infinite;
-        }
-
-        @keyframes nucleus-float {
-            0%, 100% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(1.05); }
-        }
+/* Анімація електрона */
+@keyframes electron-orbit {
+    0% { transform: rotate(0deg) translateX(50px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(50px) rotate(-360deg); }
+}
     </style>
     
 </head>
@@ -275,72 +265,71 @@
 
     <script>
         // Додаємо тултип та обробники подій
-        const tooltip = document.createElement('div');
-        tooltip.className = 'element-tooltip';
-        document.body.appendChild(tooltip);
+<script>
+    // Додаємо тултип та обробники подій
+    const tooltip = document.createElement('div');
+    tooltip.className = 'element-tooltip';
+    document.body.appendChild(tooltip);
 
-        // Оновлюємо створення елементів таблиці
-        elements.forEach(element => {
-            const el = document.createElement('div');
-            el.className = 'element';
-            el.innerHTML = `
-                <div class="atomic-number">${element.atomicNumber}</div>
-                <div class="symbol">${element.symbol}</div>
-                <div class="name">${element.name}</div>
+    // Додаємо події для кожного елемента
+    elements.forEach(element => {
+        const el = document.createElement('div');
+        el.className = 'element';
+        el.innerHTML = `
+            <div class="atomic-number">${element.atomicNumber}</div>
+            <div class="symbol">${element.symbol}</div>
+            <div class="name">${element.name}</div>
+        `;
+
+        // Додаємо обробники подій
+        el.addEventListener('mouseenter', (e) => {
+            const rect = e.target.getBoundingClientRect();
+            tooltip.style.left = `${rect.left + rect.width / 2}px`;
+            tooltip.style.top = `${rect.top - 20}px`;
+            tooltip.style.opacity = '1';
+            tooltip.innerHTML = `
+                <h3>${element.name}</h3>
+                <p>Атомний номер: ${element.atomicNumber}</p>
+                <div class="live-atom" id="live-atom-${element.atomicNumber}"></div>
+                <p>Опис: Це приклад опису елемента. У майбутньому тут буде додаткова інформація.</p>
             `;
 
-            // Додаємо обробники подій для тултипу та атома
-            el.addEventListener('mouseenter', (e) => {
-                const rect = e.target.getBoundingClientRect();
-                tooltip.style.left = `${rect.left + rect.width/2}px`;
-                tooltip.style.top = `${rect.top - 20}px`;
-                tooltip.style.opacity = '1';
-                tooltip.innerHTML = `
-                    <h3>${element.name}</h3>
-                    <p>Атомний номер: ${element.atomicNumber}</p>
-                    <div class="live-atom" id="live-atom-${element.atomicNumber}"></div>
-                `;
-                
-                // Генеруємо модель атома
-                generateLiveAtom(element.atomicNumber);
-            });
-
-            el.addEventListener('mouseleave', () => {
-                tooltip.style.opacity = '0';
-            });
-
-            periodicTable.appendChild(el);
+            // Генеруємо модель атома
+            generateLiveAtom(element.atomicNumber);
         });
 
-        // Функція для генерації атома
-        function generateLiveAtom(atomicNumber) {
-            const container = tooltip.querySelector('.live-atom');
-            container.innerHTML = '';
-            
-            // Створюємо ядро
-            const nucleus = document.createElement('div');
-            nucleus.className = 'live-nucleus';
-            container.appendChild(nucleus);
+        el.addEventListener('mouseleave', () => {
+            tooltip.style.opacity = '0';
+        });
 
-            // Створюємо електрони
-            const electronsCount = Math.min(atomicNumber, 8); // Обмеження для візуалізації
-            const orbitRadius = [40, 60]; // Радіуси орбіт
-            
-            for(let i = 0; i < electronsCount; i++) {
-                const electron = document.createElement('div');
-                electron.className = 'live-electron';
-                const orbit = i % 2 === 0 ? 0 : 1;
-                const angle = (360 / (electronsCount/2)) * (i % (electronsCount/2));
-                electron.style.transform = `rotate(${angle}deg) translateX(${orbitRadius[orbit]}px)`;
-                electron.style.animation = `electron-orbit ${4 + orbit*2}s linear infinite`;
-                container.appendChild(electron);
-            }
+        periodicTable.appendChild(el);
+    });
+
+    // Функція для генерації моделі атома
+    function generateLiveAtom(atomicNumber) {
+        const container = tooltip.querySelector('.live-atom');
+        container.innerHTML = '';
+        
+        // Створюємо ядро
+        const nucleus = document.createElement('div');
+        nucleus.className = 'live-nucleus';
+        container.appendChild(nucleus);
+
+        // Створюємо електрони
+        const electronsCount = Math.min(atomicNumber, 8); // Обмеження для візуалізації
+        const orbitRadius = [40, 60]; // Радіуси орбіт
+        
+        for (let i = 0; i < electronsCount; i++) {
+            const electron = document.createElement('div');
+            electron.className = 'live-electron';
+            const orbit = i % 2 === 0 ? 0 : 1;
+            const angle = (360 / (electronsCount / 2)) * (i % (electronsCount / 2));
+            electron.style.transform = `rotate(${angle}deg) translateX(${orbitRadius[orbit]}px)`;
+            electron.style.animation = `electron-orbit ${4 + orbit * 2}s linear infinite`;
+            container.appendChild(electron);
         }
-
-        // Виправлення анімації оригінального атома
-        document.querySelectorAll('.electron').forEach((el, i) => {
-            el.style.animation = `electron-orbit ${5 + i*2}s linear infinite`;
-        });
+    }
+</script>
     </script>
 
 
